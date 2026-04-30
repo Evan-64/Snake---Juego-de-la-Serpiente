@@ -1,20 +1,35 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Snake Básico</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Snake - Captura el Territorio</title>
+<link rel="stylesheet" href="styles.css" />
+<link rel="manifest" href="manifest.json">
 </head>
 <body>
 
-<h1>Snake</h1>
-<p>Puntaje: <span id="score">0</span></p>
+<section id="coverScreen" class="screen active">
+<img src="assets/main-cover.png" class="cover-img" />
+<button id="startBtn" class="primary-btn">INICIAR JUEGO</button>
+</section>
 
-<canvas id="gameCanvas" width="400" height="400"></canvas>
+<section id="menuScreen" class="screen">
+<img src="assets/menu.png" class="menu-img" />
+<button id="playBtn" class="primary-btn">INICIAR PARTIDA</button>
+</section>
 
-<p>Usa las flechas del teclado para moverte</p>
+<section id="gameScreen" class="screen">
+<canvas id="gameCanvas"></canvas>
 
-<script src="script.js"></script>
+<div id="hud">
+<div id="progressBar"></div>
+<div id="abilityIcon" class="hidden">🔥</div>
+</div>
 
+<div id="joystick"><div id="stick"></div></div>
+</section>
+
+<script src="game.js"></script>
 </body>
 </html>
