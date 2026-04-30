@@ -1,115 +1,88 @@
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+const TILE=32;
+blocks[captured-1].classList.add("active");
 
-const gridSize = 20;
-const tileCount = canvas.width / gridSize;
+if(captured===8) nextLevel();
 
-let snake = [
-    { x: 10, y: 10 }
-];
 
-let velocityX = 0;
-let velocityY = 0;
+function nextLevel(){
 
-let foodX = 5;
-let foodY = 5;
+level++;
 
-let score = 0;
+if(level>=maps.length) return;
 
-document.addEventListener("keydown", changeDirection);
+captured=0;
+abilityUnlocked=false;
+abilityActive=false;
 
-function changeDirection(event) {
-    if (event.key === "ArrowUp" && velocityY !== 1) {
-        velocityX = 0;
-        velocityY = -1;
-    }
-    if (event.key === "ArrowDown" && velocityY !== -1) {
-        velocityX = 0;
-        velocityY = 1;
-    }
-    if (event.key === "ArrowLeft" && velocityX !== 1) {
-        velocityX = -1;
-        velocityY = 0;
-    }
-    if (event.key === "ArrowRight" && velocityX !== -1) {
-        velocityX = 1;
-        velocityY = 0;
-    }
+loadLevel();
+
 }
 
-function gameLoop() {
-    update();
-    draw();
+window.addEventListener("keydown",e=>{
+
+if(e.key==="ArrowUp") direction="up";
+if(e.key==="ArrowDown") direction="down";
+if(e.key==="ArrowLeft") direction="left";
+if(e.key==="ArrowRight") direction="right";
+
+if(e.key===" "){
+
+if(abilityUnlocked) abilityActive=true;
+
 }
 
-function update() {
-    const head = {
-        x: snake[0].x + velocityX,
-        y: snake[0].y + velocityY
-    };
+});
 
-    if (
-        head.x < 0 ||
-        head.y < 0 ||
-        head.x >= tileCount ||
-        head.y >= tileCount
-    ) {
-        resetGame();
-        return;
-    }
+const stick=document.getElementById("stick");
 
-    for (let part of snake) {
-        if (head.x === part.x && head.y === part.y) {
-            resetGame();
-            return;
-        }
-    }
+stick.addEventListener("touchmove",e=>{
 
-    snake.unshift(head);
+let x=e.touches[0].clientX;
+let y=e.touches[0].clientY;
 
-    if (head.x === foodX && head.y === foodY) {
-        score++;
-        document.getElementById("score").textContent = score;
-        generateFood();
-    } else {
-        snake.pop();
-    }
+if(x<80) direction="left";
+if(x>120) direction="right";
+if(y<80) direction="up";
+if(y>120) direction="down";
+
+});
+
+function loop(){
+
+ctx.clearRect(0,0,canvas.width,canvas.height);
+
+moveSnake();
+collision();
+
+drawTerritory();
+drawMap();
+drawNodes();
+drawSnake();
+
+requestAnimationFrame(loop);
+
 }
 
-function generateFood() {
-    foodX = Math.floor(Math.random() * tileCount);
-    foodY = Math.floor(Math.random() * tileCount);
+function startGame(){
+
+captured=0;
+loadLevel();
+drawProgress();
+loop();
+
 }
 
-function draw() {
-    ctx.fillStyle = "black";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+const cover=document.getElementById("coverScreen");
+const menu=document.getElementById("menuScreen");
+const game=document.getElementById("gameScreen");
 
-    ctx.fillStyle = "lime";
-    for (let part of snake) {
-        ctx.fillRect(
-            part.x * gridSize,
-            part.y * gridSize,
-            gridSize - 2,
-            gridSize - 2
-        );
-    }
+startBtn.onclick=()=>{
+cover.classList.remove("active");
+menu.classList.add("active");
+};
 
-    ctx.fillStyle = "red";
-    ctx.fillRect(
-        foodX * gridSize,
-        foodY * gridSize,
-        gridSize - 2,
-        gridSize - 2
-    );
-}
-
-function resetGame() {
-    snake = [{ x: 10, y: 10 }];
-    velocityX = 0;
-    velocityY = 0;
-    score = 0;
-    document.getElementById("score").textContent = score;
-}
-
-setInterval(gameLoop, 100);
+playBtn.onclick=()=>{
+menu.classList.remove("active");
+game.classList.add("active");
+startGame();
+};
